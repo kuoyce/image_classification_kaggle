@@ -22,3 +22,8 @@ Inspiration
 Want to build powerful Neural network that can classify these images with more accuracy.
 
 Extracted & Copy: https://www.kaggle.com/datasets/puneet6060/intel-image-classification?resource=download
+
+
+## for futre reference
+One cycle Learning rate policies implementation in keras
+https://github.com/titu1994/keras-one-cycle
