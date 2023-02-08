@@ -74,16 +74,20 @@ callbacks = [
 model = Sequential([
   layers.Rescaling(1./255, input_shape=input_shape),
   layers.Conv2D(32, 3, padding='same', activation='relu'),
+  model.add(BatchNormalization()),
   layers.MaxPooling2D(),
   #layers.Dropout(0.1),
   layers.Conv2D(64, 3, padding='same', activation='relu'),
+  model.add(BatchNormalization()),
   layers.MaxPooling2D(),
   #layers.Dropout(0.1),
   layers.Conv2D(128, 3, padding='same', activation='relu'),
+  model.add(BatchNormalization()),
   layers.MaxPooling2D(),
   layers.Dropout(0.2),
   layers.Flatten(),
   layers.Dense(128, activation='relu'),
+  model.add(BatchNormalization()),
   layers.Dropout(0.5),
   layers.Dense(num_classes, name="outputs")
 ])
