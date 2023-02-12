@@ -1,10 +1,10 @@
+## depreciated due to keras library keras.utils.image_dataset_from_directory ##
+
 import os
 from tensorflow import keras
 import cv2
 from tqdm import tqdm
 import numpy as np
-
-print('keras is in!')
 
 folderpath = r'.\database\archive'
 

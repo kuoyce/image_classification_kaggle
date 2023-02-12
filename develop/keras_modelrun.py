@@ -16,7 +16,7 @@ folderpath = r'.\database\archive'
 train_filepath = os.path.join(folderpath, 'seg_train', 'seg_train')
 test_filepath = os.path.join(folderpath, 'seg_test', 'seg_test')
 
-batch_size = 32
+batch_size = 64 #32
 img_height = 150
 img_width = 150
 seed = 42
@@ -74,26 +74,26 @@ callbacks = [
 model = Sequential([
   layers.Rescaling(1./255, input_shape=input_shape),
   layers.Conv2D(32, 3, padding='same', activation='relu'),
-  model.add(BatchNormalization()),
+  layers.BatchNormalization(),
   layers.MaxPooling2D(),
-  #layers.Dropout(0.1),
   layers.Conv2D(64, 3, padding='same', activation='relu'),
-  model.add(BatchNormalization()),
+  layers.BatchNormalization(),
   layers.MaxPooling2D(),
-  #layers.Dropout(0.1),
   layers.Conv2D(128, 3, padding='same', activation='relu'),
-  model.add(BatchNormalization()),
+  layers.BatchNormalization(),
   layers.MaxPooling2D(),
   layers.Dropout(0.2),
   layers.Flatten(),
   layers.Dense(128, activation='relu'),
-  model.add(BatchNormalization()),
+  layers.BatchNormalization(),
   layers.Dropout(0.5),
   layers.Dense(num_classes, name="outputs")
 ])
 
+
+optim = tf.keras.optimizers.Adam(learning_rate=0.0005) #default=0.001
 #complie
-model.compile(optimizer='adam',
+model.compile(optimizer=optim,
               loss=tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True),
               metrics=['accuracy'])
 
@@ -101,7 +101,7 @@ model.compile(optimizer='adam',
 model.summary()
 
 #train model
-epochs=15
+epochs=10
 history = model.fit(
   train_ds,
   validation_data=val_ds,
@@ -133,6 +133,32 @@ plt.title('Training and Validation Loss')
 plt.show()
 
 
+###############################################
+#eval on train dataset first---------
+model.evaluate(train_ds)
+
+#analyse model predictions on test dataset
+predictions = model.predict(train_ds)
+pred_labels = np.argmax(predictions, axis = 1)
+
+test_labels = list(train_ds.unbatch().map(lambda x,y: y))
+
+CM = tf.math.confusion_matrix(labels=test_labels, predictions=pred_labels).numpy()
+print(CM)
+
+# CM = confusion_matrix(test_labels, pred_labels)
+# print(CM)
+
+ax = plt.axes()
+sns.heatmap(CM, annot=True, 
+           annot_kws={"size": 6}, 
+           xticklabels=class_names, 
+           yticklabels=class_names, ax = ax)
+ax.set_title('Confusion matrix')
+plt.show()
+
+##############################################
+#eval on test_ds
 model.evaluate(test_ds)
 
 #analyse model predictions on test dataset
@@ -154,3 +180,6 @@ sns.heatmap(CM, annot=True,
            yticklabels=class_names, ax = ax)
 ax.set_title('Confusion matrix')
 plt.show()
+
+
+##decide good number of epochs
